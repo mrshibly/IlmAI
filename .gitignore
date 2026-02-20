@@ -8,6 +8,7 @@ __pycache__/
 *.env
 *.db
 *.sqlite3
+ilmai.db
 app.db
 *.log
 .venv/

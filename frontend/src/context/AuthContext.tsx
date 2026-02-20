@@ -7,6 +7,8 @@ interface User {
   id: number;
   email: string;
   full_name?: string;
+  preferred_madhhab: string;
+  ui_language: string;
 }
 
 interface AuthContextType {
@@ -14,6 +16,7 @@ interface AuthContextType {
   token: string | null;
   login: (token: string) => Promise<void>;
   logout: () => void;
+  updateUserSettings: (updates: Partial<User>) => Promise<boolean>;
   isLoading: boolean;
 }
 
@@ -27,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUser = async (authToken: string) => {
     try {
-      const response = await fetch("http://localhost:8000/me", {
+      const response = await fetch("http://127.0.0.1:8000/me", {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -70,8 +73,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     router.push("/login");
   };
 
+  const updateUserSettings = async (updates: Partial<User>) => {
+    if (!token) return false;
+    try {
+      const response = await fetch("http://127.0.0.1:8000/me", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updates),
+      });
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setUser(updatedUser);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error("Update failed:", err);
+      return false;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, token, login, logout, updateUserSettings, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

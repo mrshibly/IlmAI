@@ -21,23 +21,43 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     full_name = Column(String)
+    preferred_madhhab = Column(String, default="General")  # Hanafi, Shafi'i, Maliki, Hanbali, General
+    ui_language = Column(String, default="en")        # en, bn
     is_active = Column(Boolean, default=True)
+    tier = Column(String, default="free")  # free, pro
+    usage_limit = Column(Integer, default=10) # 10 queries/day for free
+    usage_count = Column(Integer, default=0)
+    last_usage_reset = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     chat_histories = relationship("ChatHistory", back_populates="user")
+    chat_sessions = relationship("ChatSession", back_populates="user")
     saved_citations = relationship("SavedCitation", back_populates="user")
+
+class ChatSession(Base):
+    __tablename__ = "chat_sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    title = Column(String, default="New Conversation")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="chat_sessions")
+    messages = relationship("ChatHistory", back_populates="session", cascade="all, delete-orphan")
 
 class ChatHistory(Base):
     __tablename__ = "chat_histories"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
+    session_id = Column(Integer, ForeignKey("chat_sessions.id"))
     query = Column(Text, nullable=False)
     response = Column(Text, nullable=False)
     language = Column(String, default="en")
     timestamp = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="chat_histories")
+    session = relationship("ChatSession", back_populates="messages")
 
 class SavedCitation(Base):
     __tablename__ = "saved_citations"

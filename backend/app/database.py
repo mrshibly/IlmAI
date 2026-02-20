@@ -6,20 +6,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost:5432/ilmai")
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./ilmai.db")
 
-# Fallback to SQLite if Postgres is unavailable (for verification/dev)
-try:
-    engine = create_engine(SQLALCHEMY_DATABASE_URL)
-    # Test connection briefly
-    with engine.connect() as conn:
-        pass
-except Exception as e:
-    print(f"PostgreSQL connection failed: {e}. Falling back to SQLite for verification.")
-    SQLALCHEMY_DATABASE_URL = "sqlite:///./ilmai.db"
-    engine = create_engine(
-        SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-    )
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { Sparkles } from "lucide-react";
+import BackgroundAccents from "@/components/BackgroundAccents";
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState("");
@@ -19,7 +21,7 @@ export default function SignupPage() {
 
     try {
       // Step 1: Create account
-      const signupRes = await fetch("http://localhost:8000/signup", {
+      const signupRes = await fetch("http://127.0.0.1:8000/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, full_name: fullName }),
@@ -36,7 +38,7 @@ export default function SignupPage() {
       formData.append("username", email);
       formData.append("password", password);
 
-      const loginRes = await fetch("http://localhost:8000/login", {
+      const loginRes = await fetch("http://127.0.0.1:8000/login", {
         method: "POST",
         body: formData,
       });
@@ -55,17 +57,18 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-background-dark flex items-center justify-center p-6">
-      <div className="max-w-md w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="min-h-screen bg-[#020617] text-slate-200 flex items-center justify-center p-6 relative overflow-hidden selection:bg-emerald-500/30">
+      <BackgroundAccents />
+      <div className="max-w-md w-full animate-in fade-in slide-in-from-bottom-4 duration-700 relative z-10">
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center p-3 bg-primary rounded-2xl mb-4 shadow-xl shadow-primary/20">
-            <span className="material-symbols-outlined text-white text-3xl">mosque</span>
+          <div className="inline-flex items-center justify-center p-4 bg-emerald-500 rounded-3xl mb-6 shadow-2xl shadow-emerald-500/20">
+            <Sparkles className="text-slate-950 w-8 h-8 fill-slate-950" />
           </div>
-          <h1 className="text-3xl font-black text-primary uppercase tracking-tighter">IlmAI</h1>
+          <h1 className="text-4xl font-black text-white tracking-tight uppercase italic">IlmAI</h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">Begin your research journey</p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900/50 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800">
+        <div className="premium-glass p-10 rounded-[40px]">
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
               <div className="p-4 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-2xl text-red-600 dark:text-red-400 text-sm font-medium flex items-center gap-2">
@@ -80,7 +83,7 @@ export default function SignupPage() {
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full px-5 py-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-700 dark:text-slate-200"
+                className="w-full px-6 py-4 rounded-2xl bg-slate-900/50 border border-slate-800 focus:border-emerald-500 transition-all outline-none text-white placeholder:text-slate-600"
                 placeholder="Your Name (optional)"
               />
             </div>
@@ -92,7 +95,7 @@ export default function SignupPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-5 py-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-700 dark:text-slate-200"
+                className="w-full px-6 py-4 rounded-2xl bg-slate-900/50 border border-slate-800 focus:border-emerald-500 transition-all outline-none text-white placeholder:text-slate-600"
                 placeholder="name@example.com"
               />
             </div>
@@ -105,7 +108,7 @@ export default function SignupPage() {
                 minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-5 py-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-700 dark:text-slate-200"
+                className="w-full px-6 py-4 rounded-2xl bg-slate-900/50 border border-slate-800 focus:border-emerald-500 transition-all outline-none text-white placeholder:text-slate-600"
                 placeholder="At least 6 characters"
               />
             </div>
@@ -113,7 +116,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary hover:bg-emerald-dark text-white font-black py-4 rounded-2xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2"
+              className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-4 rounded-2xl shadow-2xl shadow-emerald-500/20 transition-all active:scale-[0.98] disabled:opacity-30 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -129,7 +132,7 @@ export default function SignupPage() {
           <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 text-center">
             <p className="text-slate-500 text-sm font-medium">
               Already have an account?{" "}
-              <Link href="/login" className="text-primary hover:text-emerald-dark font-bold underline decoration-2 underline-offset-4 decoration-primary/20 hover:decoration-primary transition-all">
+              <Link href="/login" className="text-emerald-500 hover:text-emerald-400 font-bold transition-all underline decoration-emerald-500/20 hover:decoration-emerald-400">
                 Sign In
               </Link>
             </p>
