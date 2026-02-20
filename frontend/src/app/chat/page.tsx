@@ -537,37 +537,47 @@ function ChatContent() {
 
                     {msg.role === "assistant" && msg.sources && msg.sources.length > 0 && (
                       <div className="grid sm:grid-cols-2 gap-3 mt-2">
-                        {msg.sources.map((source, sIdx) => (
-                          <div 
-                            key={sIdx}
-                            className="bg-slate-900 border border-slate-800 p-4 rounded-2xl hover:border-slate-700 transition-all relative group"
-                          >
-                             <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                  <div className={`p-1.5 rounded-lg ${source.type === 'quran' ? 'bg-emerald-500/10 text-emerald-400' : source.type === 'hadith' ? 'bg-blue-500/10 text-blue-400' : 'bg-amber-500/10 text-amber-400'}`}>
-                                     {source.type === 'quran' ? <BookOpen className="w-3.5 h-3.5" /> : source.type === 'hadith' ? <FileText className="w-3.5 h-3.5" /> : <Globe className="w-3.5 h-3.5" />}
+                        {msg.sources.filter((s, i, self) => 
+                          i === self.findIndex((t) => (
+                            t.id === s.id && t.content === s.content
+                          ))
+                        ).map((source, sIdx) => {
+                          const displayTitle = source.id.startsWith('http') 
+                            ? new URL(source.id).hostname.replace('www.', '') 
+                            : source.id;
+
+                          return (
+                            <div 
+                              key={sIdx}
+                              className="bg-slate-900/40 backdrop-blur-sm border border-slate-800 p-4 rounded-2xl hover:border-emerald-500/30 hover:bg-slate-900/60 transition-all relative group shadow-lg"
+                            >
+                               <div className="flex items-center justify-between mb-2">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <div className={`p-1.5 rounded-lg shrink-0 ${source.type === 'quran' ? 'bg-emerald-500/10 text-emerald-400' : source.type === 'hadith' ? 'bg-blue-500/10 text-blue-400' : 'bg-amber-500/10 text-amber-400'}`}>
+                                       {source.type === 'quran' ? <BookOpen className="w-3.5 h-3.5" /> : source.type === 'hadith' ? <FileText className="w-3.5 h-3.5" /> : <Globe className="w-3.5 h-3.5" />}
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 truncate" title={source.id}>{displayTitle}</span>
                                   </div>
-                                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{source.id}</span>
-                                </div>
-                                <button 
-                                  onClick={() => saveToLibrary(source)}
-                                  className="text-slate-500 hover:text-emerald-400 transition-colors p-1"
-                                  title="Save to Library"
-                                >
-                                  <BookmarkPlus className="w-4 h-4" />
+                                  <button 
+                                    onClick={() => saveToLibrary(source)}
+                                    className="text-slate-500 hover:text-emerald-400 transition-colors p-1"
+                                    title="Save to Library"
+                                  >
+                                    <BookmarkPlus className="w-4 h-4" />
+                                  </button>
+                               </div>
+                               <p className="text-[11px] text-slate-400 leading-relaxed italic line-clamp-2">
+                                  "{source.content}"
+                               </p>
+                               <button 
+                                 onClick={() => setSelectedReference(source)}
+                                 className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300 mt-2"
+                               >
+                                  View Reference <ChevronRight className="w-2.5 h-2.5" />
                                 </button>
-                             </div>
-                             <p className="text-[11px] text-slate-400 leading-relaxed italic line-clamp-2">
-                                "{source.content}"
-                             </p>
-                             <button 
-                               onClick={() => setSelectedReference(source)}
-                               className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300 mt-2"
-                             >
-                                View Reference <ChevronRight className="w-2.5 h-2.5" />
-                             </button>
-                          </div>
-                        ))}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
 
