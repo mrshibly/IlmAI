@@ -15,10 +15,16 @@ Best for users who want a managed experience with minimal server configuration.
      - `NEXT_PUBLIC_API_URL`: The URL of your deployed backend (e.g., `https://ilmai-api.railway.app`).
   4. Click **Deploy**.
 - **Backend (FastAPI)**:
-  1. Create a "Web Service" on [Railway](https://railway.app).
-  2. Link your GitHub repository and point it to the `backend` directory.
-  3. Set strictly required [Environment Variables](#environment-variables).
-  4. Railway will automatically detect the `Dockerfile` and deploy.
+  - **Option A: Railway** (Paid/Trial): Create a "Web Service", link GitHub, point to `backend`.
+  - **Option B: Render.com** (Free Tier):
+    1. Sign up at [Render.com](https://render.com).
+    2. Click **New** > **Web Service**.
+    3. Connect your GitHub repository.
+    4. Set the **Root Directory** to `backend`.
+    5. Render will detect the `Dockerfile`. Change "Runtime" to **Docker**.
+    6. Under **Environment Variables**, add the keys listed in the [Environment Variables](#environment-variables) section.
+    7. Under **Instance Type**, select the **Free** tier (0.5 CPU, 512MB RAM).
+    8. **Bonus**: Create a "Free PostgreSQL" database on Render and use its **Internal Database URL** for the `DATABASE_URL` variable.
 
 ### 2. Professional Hosting (VPS + Docker)
 
