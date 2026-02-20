@@ -43,6 +43,10 @@ IlmAI is a premium, AI-powered research platform designed for scholars and stude
    npm run dev
    ```
 
+## 🚀 Deployment
+
+For professional hosting instructions, including Vercel, Railway, and Docker-based VPS setups, please see our [Deployment Guide](DEPLOYMENT.md).
+
 ## 📜 Scholarly Guidelines
 
 IlmAI is a research aid. While it retrieves verified sources, users are encouraged to consult qualified scholars for practical religious applications.
