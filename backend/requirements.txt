@@ -7,7 +7,7 @@ pydantic
 pydantic-settings
 python-dotenv
 groq
-sentence-transformers
+google-generativeai
 requests
 python-jose[cryptography]
 passlib[bcrypt]

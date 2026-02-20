@@ -1,25 +1,41 @@
 import os
 import numpy as np
-from sentence_transformers import SentenceTransformer
+import google.generativeai as genai
 import logging
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
 class RAGEngine:
     def __init__(self):
-        # Using a small, fast model for verification
-        self.model_name = "all-MiniLM-L6-v2"
-        try:
-            self.model = SentenceTransformer(self.model_name)
-            logger.info(f"Loaded embedding model: {self.model_name}")
-        except Exception as e:
-            logger.error(f"Failed to load sentence-transformer: {e}")
-            self.model = None
+        # Configure Gemini API
+        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
+            self.api_available = True
+            logger.info("Configured Gemini Embeddings API")
+        else:
+            self.api_available = False
+            logger.warning("GEMINI_API_KEY not found. Semantic search will be disabled.")
+        
+        # Using Gemini's latest embedding model
+        self.model_name = "models/text-embedding-004"
 
     def get_embedding(self, text: str):
-        if not self.model or not text:
+        if not self.api_available or not text:
             return None
-        return self.model.encode(text).tolist()
+        try:
+            result = genai.embed_content(
+                model=self.model_name,
+                content=text,
+                task_type="retrieval_query"
+            )
+            return result['embedding']
+        except Exception as e:
+            logger.error(f"Failed to generate embedding via Gemini API: {e}")
+            return None
 
     def cosine_similarity(self, vec1, vec2):
         if vec1 is None or vec2 is None:
