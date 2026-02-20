@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import SubscriptionModal from "./SubscriptionModal";
+import { API_BASE_URL } from "@/apiConfig";
 
 export default function Sidebar() {
   const { logout, token } = useAuth();
@@ -27,7 +28,7 @@ export default function Sidebar() {
   const fetchUsage = React.useCallback(async () => {
     if (!token) return;
     try {
-      const res = await fetch("http://127.0.0.1:8000/usage", {
+      const res = await fetch(`${API_BASE_URL}/usage`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -37,7 +38,7 @@ export default function Sidebar() {
     } catch (err) {
       // Only log once to avoid console spam during interval
       if (usage !== null || errorCount.current === 0) {
-        console.error("Sidebar: Failed to fetch usage from http://127.0.0.1:8000/usage. Error:", err);
+        console.error(`Sidebar: Failed to fetch usage from ${API_BASE_URL}/usage. Error:`, err);
         errorCount.current++;
       }
     }

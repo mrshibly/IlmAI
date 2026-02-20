@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "@/apiConfig";
 
 interface User {
   id: number;
@@ -30,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUser = async (authToken: string) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/me", {
+      const response = await fetch(`${API_BASE_URL}/me`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -76,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateUserSettings = async (updates: Partial<User>) => {
     if (!token) return false;
     try {
-      const response = await fetch("http://127.0.0.1:8000/me", {
+      const response = await fetch(`${API_BASE_URL}/me`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

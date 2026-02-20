@@ -20,6 +20,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import Sidebar from "@/components/Sidebar";
 import BackgroundAccents from "@/components/BackgroundAccents";
+import { API_BASE_URL } from "@/apiConfig";
 
 export default function DashboardPage() {
   const { user, token, logout, isLoading } = useAuth();
@@ -37,7 +38,7 @@ export default function DashboardPage() {
     const fetchHistory = async () => {
       if (!token) return;
       try {
-        const res = await fetch("http://127.0.0.1:8000/sessions", {
+        const res = await fetch(`${API_BASE_URL}/sessions`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
@@ -51,7 +52,7 @@ export default function DashboardPage() {
     const fetchLibrary = async () => {
       if (!token) return;
       try {
-        const res = await fetch("http://127.0.0.1:8000/library", {
+        const res = await fetch(`${API_BASE_URL}/library`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {

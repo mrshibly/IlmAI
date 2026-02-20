@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { Sparkles } from "lucide-react";
 import BackgroundAccents from "@/components/BackgroundAccents";
+import { API_BASE_URL } from "@/apiConfig";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -23,7 +24,7 @@ export default function LoginPage() {
       formData.append("username", email);
       formData.append("password", password);
 
-      const response = await fetch("http://127.0.0.1:8000/login", {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         body: formData,
       });

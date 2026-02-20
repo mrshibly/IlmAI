@@ -4,6 +4,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Sparkles, Zap, Shield, Globe, FileText, X } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { API_BASE_URL } from "@/apiConfig";
 
 interface SubscriptionModalProps {
   isOpen: boolean;
@@ -19,7 +20,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
     if (!token) return;
     setIsUpgrading(true);
     try {
-      const res = await fetch("http://127.0.0.1:8000/upgrade", {
+      const res = await fetch(`${API_BASE_URL}/upgrade`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });

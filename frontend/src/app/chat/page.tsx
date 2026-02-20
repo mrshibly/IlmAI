@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import BackgroundAccents from "@/components/BackgroundAccents";
+import { API_BASE_URL } from "@/apiConfig";
 
 interface Source {
   type: string;
@@ -150,7 +151,7 @@ function ChatContent() {
     const fetchSessions = async () => {
       if (!token) return;
       try {
-        const res = await fetch("http://127.0.0.1:8000/sessions", {
+        const res = await fetch(`${API_BASE_URL}/sessions`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.ok) {
@@ -169,7 +170,7 @@ function ChatContent() {
     setIsLoading(true);
     setCurrentSessionId(sessionId);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/history/${sessionId}`, {
+      const res = await fetch(`${API_BASE_URL}/history/${sessionId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -231,7 +232,7 @@ function ChatContent() {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
-      const url = new URL("http://127.0.0.1:8000/query");
+      const url = new URL(`${API_BASE_URL}/query`);
       url.searchParams.append("query", finalQuery);
       url.searchParams.append("mode", researchMode);
       if (currentSessionId) url.searchParams.append("session_id", currentSessionId.toString());
@@ -273,7 +274,7 @@ function ChatContent() {
     e.stopPropagation();
     if (!token) return;
     try {
-      const res = await fetch(`http://127.0.0.1:8000/sessions/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/sessions/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -289,7 +290,7 @@ function ChatContent() {
   const saveToLibrary = async (source: Source) => {
     if (!token) return;
     try {
-      const res = await fetch(`http://127.0.0.1:8000/library/save?source_type=${source.type}&source_id=${encodeURIComponent(source.id)}`, {
+      const res = await fetch(`${API_BASE_URL}/library/save?source_type=${source.type}&source_id=${encodeURIComponent(source.id)}`, {
         method: "POST",
         headers: { 
           "Authorization": `Bearer ${token}`,

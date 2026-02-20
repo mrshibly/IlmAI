@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { Sparkles } from "lucide-react";
 import BackgroundAccents from "@/components/BackgroundAccents";
+import { API_BASE_URL } from "@/apiConfig";
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState("");
@@ -21,7 +22,7 @@ export default function SignupPage() {
 
     try {
       // Step 1: Create account
-      const signupRes = await fetch("http://127.0.0.1:8000/signup", {
+      const signupRes = await fetch(`${API_BASE_URL}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, full_name: fullName }),
@@ -38,7 +39,7 @@ export default function SignupPage() {
       formData.append("username", email);
       formData.append("password", password);
 
-      const loginRes = await fetch("http://127.0.0.1:8000/login", {
+      const loginRes = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         body: formData,
       });
