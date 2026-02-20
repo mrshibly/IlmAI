@@ -71,9 +71,7 @@ export default function DashboardPage() {
 
   const stats = [
     { label: "Research Sessions", value: historyItems.length, icon: History, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-    { label: "Citations Found", value: "128", icon: FileText, color: "text-blue-500", bg: "bg-blue-500/10" },
-    { label: "Hours Studied", value: "14.2", icon: Clock, color: "text-amber-500", bg: "bg-amber-500/10" },
-    { label: "Saved Results", value: libraryCount, icon: Bookmark, color: "text-purple-500", bg: "bg-purple-500/10" }
+    { label: "Saved Citations", value: libraryCount, icon: Bookmark, color: "text-purple-500", bg: "bg-purple-500/10" }
   ];
 
   return (
@@ -97,7 +95,7 @@ export default function DashboardPage() {
 
         <div className="p-8 max-w-7xl mx-auto space-y-10">
           {/* Stats Grid */}
-          <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <section className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6 max-w-2xl">
             {stats.map((stat, i) => (
               <motion.div 
                 key={stat.label}
@@ -135,7 +133,7 @@ export default function DashboardPage() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.1 }}
                       className="group bg-slate-900/60 border border-slate-800 p-5 rounded-2xl flex items-center justify-between hover:bg-slate-800/80 transition-all cursor-pointer"
-                      onClick={() => router.push(`/chat?q=${encodeURIComponent(item.query)}`)}
+                      onClick={() => router.push(`/chat?session_id=${item.id}`)}
                     >
                       <div className="flex items-center gap-4 flex-1 min-w-0">
                         <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-emerald-500 group-hover:text-slate-950 transition-all">

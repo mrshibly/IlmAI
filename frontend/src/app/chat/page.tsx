@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { motion } from "framer-motion";
 import { 
   Sparkles, 
@@ -49,6 +50,7 @@ interface Message {
 function ChatContent() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q");
+  const initialSessionId = searchParams.get("session_id");
   const router = useRouter();
 
   const { user, token, logout, isLoading: authLoading } = useAuth();
@@ -61,6 +63,7 @@ function ChatContent() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sessions, setSessions] = useState<{ id: number; title: string; created_at: string }[]>([]);
+  const currentSessionIdRef = useRef<number | null>(null);
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const hasInitialQueryRun = useRef(false);
@@ -68,6 +71,12 @@ function ChatContent() {
   const [language, setLanguage] = useState<"en" | "bn">("en");
   const [researchMode, setResearchMode] = useState<"standard" | "comparative">("standard");
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const [selectedReference, setSelectedReference] = useState<Source | null>(null);
+
+  // Sync ref with state for use in executeSearch
+  useEffect(() => {
+    currentSessionIdRef.current = currentSessionId;
+  }, [currentSessionId]);
 
   // Sync with user preference
   useEffect(() => {
@@ -169,6 +178,8 @@ function ChatContent() {
     if (!token) return;
     setIsLoading(true);
     setCurrentSessionId(sessionId);
+    // Clear URL params to avoid re-triggering search on reload
+    router.replace('/chat');
     try {
       const res = await fetch(`${API_BASE_URL}/history/${sessionId}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -196,11 +207,14 @@ function ChatContent() {
   };
 
   useEffect(() => {
+    if (initialSessionId) {
+      setCurrentSessionId(parseInt(initialSessionId));
+    }
     if (initialQuery && !hasInitialQueryRun.current && user) {
       hasInitialQueryRun.current = true;
-      executeSearch(initialQuery);
+      executeSearch(initialQuery, initialSessionId ? parseInt(initialSessionId) : null);
     }
-  }, [initialQuery, user]);
+  }, [initialQuery, initialSessionId, user]);
 
   const copyToClipboard = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
@@ -216,7 +230,7 @@ function ChatContent() {
     }
   };
 
-  const executeSearch = async (queryText: string) => {
+  const executeSearch = async (queryText: string, sessionIdOverride?: number | null) => {
     if (!queryText.trim() || isLoading || !user) return;
 
     const userMessage: Message = { role: "user", content: queryText };
@@ -225,6 +239,7 @@ function ChatContent() {
     setIsSidebarOpen(false);
 
     try {
+      const sessionId = sessionIdOverride !== undefined ? sessionIdOverride : currentSessionIdRef.current;
       // Use user's preferred language if available
       const currentLanguage = user.ui_language || language;
       const langPrefix = currentLanguage === "bn" ? "Please respond in Bangla (Bengali). The question is: " : "";
@@ -235,7 +250,7 @@ function ChatContent() {
       const url = new URL(`${API_BASE_URL}/query`);
       url.searchParams.append("query", finalQuery);
       url.searchParams.append("mode", researchMode);
-      if (currentSessionId) url.searchParams.append("session_id", currentSessionId.toString());
+      if (sessionId) url.searchParams.append("session_id", sessionId.toString());
 
       const response = await fetch(url.toString(), {
         method: "POST",
@@ -426,14 +441,6 @@ function ChatContent() {
             </div>
             
             <div className="flex items-center gap-4">
-              <button 
-                onClick={() => window.print()}
-                className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/50 text-slate-400 hover:text-emerald-400 hover:border-emerald-500/30 transition-all font-black text-[10px] uppercase tracking-widest"
-                title="Export current transcript as PDF/Whitepaper"
-              >
-                <FileText className="w-3.5 h-3.5" />
-                Export Research
-              </button>
 
               <button
                 onClick={() => setResearchMode(m => m === "standard" ? "comparative" : "standard")}
@@ -456,10 +463,6 @@ function ChatContent() {
                 {language === "en" ? "English" : "বাংলা"}
               </button>
               
-              <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-widest">
-                <Sparkles className="w-3.5 h-3.5" />
-                Adv. Semantic Engine
-              </div>
             </div>
           </header>
 
@@ -524,8 +527,8 @@ function ChatContent() {
                         : "bg-slate-900/60 backdrop-blur-md border border-slate-800 text-slate-300 rounded-tl-none"
                     }`}>
                       {msg.role === "assistant" ? (
-                        <div className="text-sm leading-relaxed prose prose-invert max-w-none prose-headings:text-white prose-strong:text-emerald-400 prose-p:my-2 prose-blockquote:border-emerald-500 prose-code:text-indigo-300">
-                          <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        <div className="text-sm leading-relaxed prose prose-invert max-w-none prose-headings:text-white prose-strong:text-emerald-400 prose-p:my-2 prose-blockquote:border-emerald-500 prose-code:text-indigo-300 markdown-content">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
                         </div>
                       ) : (
                         <p className="leading-relaxed">{msg.content}</p>
@@ -557,7 +560,10 @@ function ChatContent() {
                              <p className="text-[11px] text-slate-400 leading-relaxed italic line-clamp-2">
                                 "{source.content}"
                              </p>
-                             <button className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300 mt-2">
+                             <button 
+                               onClick={() => setSelectedReference(source)}
+                               className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300 mt-2"
+                             >
                                 View Reference <ChevronRight className="w-2.5 h-2.5" />
                              </button>
                           </div>
@@ -573,6 +579,13 @@ function ChatContent() {
                         >
                           {copiedIdx === idx ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                           {copiedIdx === idx ? t.copied : t.copy}
+                        </button>
+                        <button
+                          onClick={() => window.print()}
+                          className="flex items-center gap-1.5 text-[10px] font-black text-slate-600 hover:text-emerald-400 transition-all uppercase tracking-widest ml-auto"
+                        >
+                          <FileText className="w-3.5 h-3.5 text-emerald-500" />
+                          Export
                         </button>
                       </div>
                     )}
@@ -646,6 +659,47 @@ function ChatContent() {
           </div>
         </div>
       </div>
+
+      {/* Reference Modal */}
+      {selectedReference && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => setSelectedReference(null)} />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="premium-glass max-w-2xl w-full p-8 rounded-3xl relative z-10 space-y-6"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-xl ${(selectedReference as Source).type === 'quran' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                   {(selectedReference as Source).type === 'quran' ? <BookOpen className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
+                </div>
+                <h3 className="text-sm font-black text-white uppercase tracking-widest">{(selectedReference as Source).id}</h3>
+              </div>
+              <button 
+                onClick={() => setSelectedReference(null)}
+                className="p-2 text-slate-500 hover:text-white transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className={`text-lg leading-relaxed text-slate-200 ${(selectedReference as Source).type === 'quran' ? 'arabic-text text-xl' : ''}`}>
+               {(selectedReference as Source).content}
+            </div>
+
+            <div className="flex justify-end pt-4">
+              <button 
+                onClick={() => saveToLibrary(selectedReference as Source)}
+                className="flex items-center gap-2 bg-emerald-500 text-slate-950 px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all hover:bg-emerald-400"
+              >
+                <BookmarkPlus className="w-4 h-4" />
+                Save to Library
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
