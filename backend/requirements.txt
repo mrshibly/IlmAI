@@ -15,3 +15,4 @@ bcrypt
 langdetect
 tavily-python
 email-validator
+python-multipart
