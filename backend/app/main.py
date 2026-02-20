@@ -24,6 +24,9 @@ app = FastAPI(
 )
 
 # Initialize database tables
+with engine.connect() as conn:
+    conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+    conn.commit()
 models.Base.metadata.create_all(bind=engine)
 
 # Enable CORS
