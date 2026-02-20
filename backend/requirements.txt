@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+pgvector
+pydantic
+pydantic-settings
+python-dotenv
+groq
+sentence-transformers
+requests
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt
+langdetect
+tavily-python

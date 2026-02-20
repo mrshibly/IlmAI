@@ -1,0 +1,45 @@
+# ============================
+# Python / Backend
+# ============================
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+*.env
+*.db
+*.sqlite3
+app.db
+*.log
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# ============================
+# Node / Frontend
+# ============================
+node_modules/
+.next/
+out/
+.DS_Store
+*.pem
+
+# ============================
+# IDE & System
+# ============================
+.idea/
+.vscode/
+Thumbs.db
+*.swp
+*.swo
+
+# ============================
+# Secrets & Keys
+# ============================
+*.key
+*.cert
+*.pem
+secrets.json
