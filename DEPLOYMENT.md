@@ -10,8 +10,10 @@ Best for users who want a managed experience with minimal server configuration.
 
 - **Frontend (Next.js)**:
   1. Connect your GitHub repository to [Vercel](https://vercel.com).
-  2. Set the `NEXT_PUBLIC_API_URL` environment variable to your Backend URL.
-  3. Deploy.
+  2. **Important**: In the project settings, set the **Root Directory** to `frontend`.
+  3. Under "Environment Variables", add:
+     - `NEXT_PUBLIC_API_URL`: The URL of your deployed backend (e.g., `https://ilmai-api.railway.app`).
+  4. Click **Deploy**.
 - **Backend (FastAPI)**:
   1. Create a "Web Service" on [Railway](https://railway.app).
   2. Link your GitHub repository and point it to the `backend` directory.
