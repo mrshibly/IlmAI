@@ -23,6 +23,9 @@ app = FastAPI(
     version="2.0.0"
 )
 
+# Initialize database tables
+models.Base.metadata.create_all(bind=engine)
+
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
@@ -31,8 +34,9 @@ app.add_middleware(
         "http://localhost:3001",
         "https://ilmai.vercel.app",
         "https://truth-ai-gamma.vercel.app",
+        "https://ilmai-frontend-v8-pathwise.onrender.com",
     ],
-    allow_origin_regex="https://.*vercel\.app",
+    allow_origin_regex="https://.*(vercel\.app|onrender\.com)",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
