@@ -2,6 +2,8 @@
 
 IlmAI is a premium, AI-powered research platform designed for scholars and students of Islamic knowledge. It provides a state-of-the-art interface for exploring Quran, Hadith, and Fiqh with academic precision.
 
+![IlmAI Landing Page](assets/landing_page.png)
+
 ## 🌟 Key Features
 
 - **Neural Semantic Search**: Beyond simple keywords. IlmAI understands the thematic and conceptual meaning of your queries using neural embeddings.
@@ -14,7 +16,59 @@ IlmAI is a premium, AI-powered research platform designed for scholars and stude
 
 - **Frontend**: Next.js 15, Tailwind CSS, Framer Motion, Lucide Icons.
 - **Backend**: FastAPI (Python), SQLAlchemy, Groq (Llama 3.3 70B), SentenceTransformers.
-- **Database**: SQLite (Vector-ready via embeddings).
+- **Database**: SQLAlchemy with PostgreSQL (`pgvector` enabled).
+
+## 🏗️ System Architecture
+
+IlmAI leverages a multi-layer neural architecture to ensure faithful retrieval and scholarly accuracy.
+
+```mermaid
+graph TB
+    subgraph "Client Layer (Render Frontend)"
+        UI["Next.js Web App"]
+        Chat["Chat Interface"]
+        Dash["Dashboard & History"]
+        Lib["Scholarly Library"]
+    end
+
+    subgraph "API Layer (Render Backend)"
+        FastAPI["FastAPI Server"]
+        Auth["Auth & Sessions"]
+        Search["Semantic Search Engine"]
+        Export["Research Exporter"]
+    end
+
+    subgraph "Intelligence Layer"
+        Gemini["Gemini API (Embeddings & Logic)"]
+        Groq["Groq API (Llama 3.3 70B)"]
+    end
+
+    subgraph "Data Layer (Render PostgreSQL)"
+        DB[("PostgreSQL\n(pgvector enabled)")]
+        Users["User Data"]
+        Sess["Chat Sessions"]
+        Docs["Scholarly Content"]
+    end
+
+    %% Interactions
+    UI -->|HTTPS/REST| FastAPI
+    FastAPI -->|JWT| Auth
+    FastAPI -->|SQL Queries| DB
+    FastAPI -->|Embeddings| Gemini
+    FastAPI -->|Inference| Groq
+
+    Search -->|Vector Search| DB
+    Export -->|Generate PDF/MD| UI
+
+    %% Styles
+    style UI fill:#10b981,stroke:#059669,color:#fff
+    style FastAPI fill:#3b82f6,stroke:#2563eb,color:#fff
+    style DB fill:#8b5cf6,stroke:#7c3aed,color:#fff
+    style Gemini fill:#f59e0b,stroke:#d97706,color:#fff
+    style Groq fill:#ef4444,stroke:#dc2626,color:#fff
+```
+
+![Architecture Diagram](assets/architecture.png)
 
 ## 🚀 Quick Start
 
