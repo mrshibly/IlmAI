@@ -45,6 +45,11 @@ IlmAI is a premium, AI-powered research platform designed for scholars and stude
 
 ## 🚀 Deployment
 
+The platform is live and operational:
+
+- **Frontend**: [https://ilmai-frontend-v8-pathwise.onrender.com/](https://ilmai-frontend-v8-pathwise.onrender.com/)
+- **Backend API**: [https://ilmai.onrender.com](https://ilmai.onrender.com)
+
 For professional hosting instructions, including Vercel, Railway, and Docker-based VPS setups, please see our [Deployment Guide](DEPLOYMENT.md).
 
 ## 📜 Scholarly Guidelines
